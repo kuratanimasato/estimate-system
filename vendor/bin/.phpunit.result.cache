@@ -1,0 +1,1 @@
+{"version":2,"defects":{"CreateInvoiceTest::testCreateInvoiceWithValidData":8,"CreateInvoiceTest::testCreateInvoiceWithoutCustomerName":8},"times":{"CreateInvoiceTest::testCreateInvoiceWithValidData":0.005,"CreateInvoiceTest::testCreateInvoiceWithoutCustomerName":0.001}}
