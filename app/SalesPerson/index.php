@@ -119,8 +119,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
                 class="font-semibold">最終更新日:</span><span><?= date('Y年m月d日 H:i', strtotime($sale['updated_at'])) ?></span>
             </div>
             <div class="flex justify-end space-x-2 mt-2">
-              <a href="app/SalesPerson/edit.php?id=<?= $sale['id'] ?>"
-                class="text-indigo-600 hover:text-indigo-900">編集</a>
+              <a href="/app/SalesPerson/edit.php?id=<?= $sale['id'] ?>"
+                class="text-indigo-600 hover:text-indigo-900 mr-4">編集</a>
               <a href="/app/SalesPerson/delete.php?id=<?= $sale['id'] ?>"
                 onclick="return confirm('「<?= htmlspecialchars($sale['name']) ?>」を削除しますか？');"
                 class="text-red-600 hover:text-red-900">削除</a>

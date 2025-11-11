@@ -7,3 +7,39 @@
   font-size: 0.875em;
   margin-top: 0.25em;
 }
+
+body {
+  font-family: sans-serif;
+  background-color: #f9fafb;
+  text-align: center;
+  padding-top: 80px;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+a.button {
+  display: inline-block;
+  background-color: #0284c7;
+  color: #fff;
+  text-decoration: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+a.button:hover {
+  background-color: #0369a1;
+}
