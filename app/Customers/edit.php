@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/csrf.php';
 // 現在アクティブなページをサイドバーに伝えるための変数 (このページでは不要ですが、構造を維持)
 $current_page = 'Customers';
 
@@ -10,6 +11,16 @@ $errors = [];
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/db_connect.php';
 
+
+
+$csrf_token = get_csrf_token();
+// フォーム送信後の処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!validate_csrf_token($_POST["csrf_token"] ?? null)) {
+    echo "不正なリクエストです";
+    exit();
+  }
+}
 // 1. GETパラメータからIDを取得
 $id = $_GET['id'] ?? null;
 if (!$id || !is_numeric($id)) {
@@ -112,14 +123,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
 
         <!-- 一般的なエラー表示 -->
         <?php if (isset($errors['general'])): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
-          <strong class="font-bold">エラーが発生しました:</strong>
-          <span class="block sm:inline"><?= htmlspecialchars($errors['general']) ?></span>
-        </div>
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+            <strong class="font-bold">エラーが発生しました:</strong>
+            <span class="block sm:inline"><?= htmlspecialchars($errors['general']) ?></span>
+          </div>
         <?php endif; ?>
 
         <!-- フォーム -->
         <form method="POST" action="edit.php?id=<?= htmlspecialchars($id) ?>" novalidate>
+          <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
           <input type="hidden" name="id" value="<?= htmlspecialchars($formData['id']) ?>">
           <!-- 法人名 -->
           <div class="mb-6">
@@ -131,7 +143,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['company_name']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="株式会社〇〇" maxlength="30">
             <?php if (isset($errors['company_name'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['company_name']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['company_name']) ?></p>
             <?php endif; ?>
           </div>
 
@@ -144,7 +156,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['email']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="example@example.com" maxlength="30">
             <?php if (isset($errors['email'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['email']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['email']) ?></p>
             <?php endif; ?>
           </div>
 

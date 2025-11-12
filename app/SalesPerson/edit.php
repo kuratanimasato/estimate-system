@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/csrf.php';
 // 現在アクティブなページをサイドバーに伝えるための変数 (このページでは不要ですが、構造を維持)
 $current_page = 'SalesPerson';
 
@@ -10,6 +11,16 @@ $errors = [];
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/db_connect.php';
 
+
+$csrf_token = get_csrf_token();
+
+//フォーム送信後の処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!validate_csrf_token($_POST["csrf_token"] ?? null)) {
+    echo "不正なリクエストです";
+    exit();
+  }
+}
 // 1. GETパラメータからIDを取得
 $id = $_GET['id'] ?? null;
 if (!$id || !is_numeric($id)) {
@@ -18,12 +29,14 @@ if (!$id || !is_numeric($id)) {
   exit;
 }
 
+
 $rules = [
   'name' => ['required' => true, 'max' => 255],
 ];
 
 // 2. フォーム送信時 (POST) の処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
   // フォームから送信されたデータを取得
   $formData = [
     'id' => $id,
@@ -82,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     // 取得したデータをフォームの初期値として設定
     $formData = $staff;
-
+    $_SESSION['token'] = bin2hex(random_bytes(32));
   } catch (PDOException $e) {
     $errors['general'] = '担当の取得中にエラーが発生しました: ' . $e->getMessage();
     // エラー発生時はフォームを空にする
@@ -111,25 +124,25 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
 
         <!-- 一般的なエラー表示 -->
         <?php if (isset($errors['general'])): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
-          <strong class="font-bold">エラーが発生しました:</strong>
-          <span class="block sm:inline"><?= htmlspecialchars($errors['general']) ?></span>
-        </div>
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+            <strong class="font-bold">エラーが発生しました:</strong>
+            <span class="block sm:inline"><?= htmlspecialchars($errors['general']) ?></span>
+          </div>
         <?php endif; ?>
 
         <!-- フォーム -->
         <form method="POST" action="edit.php?id=<?= htmlspecialchars($id) ?>" novalidate>
-          <input type="hidden" name="id" value="<?= htmlspecialchars($formData['id']) ?>">
+          <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
           <!-- 担当名 -->
           <div class="mb-6">
             <label for="company_name" class="block text-sm font-medium text-gray-700 mb-2">
               担当名 <span class="text-red-500">*</span>
             </label>
-            <input type="text" id="name" name="name" value="<?= htmlspecialchars($formData['name']) ?>"
+            <input type="text" id="id" name="name" value="<?= htmlspecialchars($formData['name']) ?>"
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['name']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="担当名を入力してください" maxlength="30">
             <?php if (isset($errors['name'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['name']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['name']) ?></p>
             <?php endif; ?>
           </div>
 

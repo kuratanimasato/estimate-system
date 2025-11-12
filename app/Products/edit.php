@@ -2,10 +2,20 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/db_connect.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/csrf.php';
 
 $current_page = 'Products';
 $errors = [];
 
+$csrf_token = get_csrf_token();
+
+//フォーム送信後の処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!validate_csrf_token($_POST["csrf_token"] ?? null)) {
+    echo "不正なリクエストです";
+    exit();
+  }
+}
 // GETパラメータからID取得
 $id = $_GET['id'] ?? null;
 if (!$id || !is_numeric($id)) {
@@ -105,12 +115,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1 class="text-3xl font-extrabold text-gray-900 mb-8 text-center">商品情報編集</h1>
 
         <?php if (isset($errors['general'])): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
-          <?= htmlspecialchars($errors['general']) ?>
-        </div>
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
+            <?= htmlspecialchars($errors['general']) ?>
+          </div>
         <?php endif; ?>
 
         <form method="POST" action="">
+          <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
           <!-- 商品名 -->
           <div class="mb-6">
             <label for="item_name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -120,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['item_name']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg"
               placeholder="クラウドサービス利用料">
             <?php if (isset($errors['item_name'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['item_name']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['item_name']) ?></p>
             <?php endif; ?>
           </div>
 
@@ -134,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['unit_price']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg"
               placeholder="例: 1200">
             <?php if (isset($errors['unit_price'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['unit_price']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['unit_price']) ?></p>
             <?php endif; ?>
           </div>
 
@@ -151,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <option value="機材費" <?= $formData['cost_type'] === '機材' ? 'selected' : '' ?>>機材費</option>
             </select>
             <?php if (isset($errors['cost_type'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['cost_type']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['cost_type']) ?></p>
             <?php endif; ?>
           </div>
 

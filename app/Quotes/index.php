@@ -125,52 +125,60 @@ try {
 
             <tbody class="bg-white divide-y divide-gray-200">
               <?php if (empty($quotes)): ?>
-              <tr>
-                <td colspan="10" class="px-6 py-4 text-center text-sm text-gray-500">
-                  登録されている見積もりはありません。
-                </td>
-              </tr>
+                <tr>
+                  <td colspan="10" class="px-6 py-4 text-center text-sm text-gray-500">
+                    登録されている見積もりはありません。
+                  </td>
+                </tr>
               <?php else: ?>
-              <?php foreach ($quotes as $quote): ?>
-              <tr class="hover:bg-gray-50 transition whitespace-nowrap">
-                <td class="px-2 py-4 text-sm font-medium text-gray-900"><?= htmlspecialchars($quote['document_type']) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-700">
-                  <?= htmlspecialchars($quote['customer_name']) ?><br>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-700">
-                  <?= htmlspecialchars($quote['cost_type'] ?? '（なし）') ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-700">
-                  <?= htmlspecialchars($quote['item_name'] ?? '（明細なし）') ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($quote['customer_email']) ?></td>
-                <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($quote['sales_rep_name']) ?></td>
-                <td class="px-2 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars(date('Y年m月d日 ', strtotime($quote['issue_date']))) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars(date('Y年m月d日 ', strtotime($quote['expiration_date']))) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($quote['subtotal']) ?></td>
-                <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($quote['total_amount']) ?></td>
-                <td class="px-2 py-4 text-sm">
-                  <span
-                    class="px-2 py-1 inline-flex text-xs font-semibold rounded-full <?= $quote['status'] === '確定' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' ?>">
-                    <?= htmlspecialchars($quote['status']) ?>
-                  </span>
-                </td>
-                <td class="px-2 py-4 text-right text-sm font-medium">
-                  <a href="/app/Quotes/view.php?id=<?= $quote['id'] ?>"
-                    class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
-                  <a href="/app/Quotes/edit.php?id=<?= $quote['id'] ?>"
-                    class="text-indigo-600 hover:text-indigo-900 mr-3">編集</a>
-                  <a href="/app/Quotes/delete.php?id=<?= $quote['id'] ?>"
-                    onclick="return confirm('「<?= htmlspecialchars($quote['customer_name']) ?>」の見積もりを削除しますか？');"
-                    class="text-red-600 hover:text-red-900">削除</a>
-                </td>
-              </tr>
-              <?php endforeach; ?>
+                <?php foreach ($quotes as $quote): ?>
+                  <tr class="hover:bg-gray-50 transition whitespace-nowrap">
+                    <td class="px-2 py-4 text-sm font-medium text-gray-900"><?= htmlspecialchars($quote['document_type']) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-700">
+                      <?= htmlspecialchars($quote['customer_name']) ?><br>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-700">
+                      <?= htmlspecialchars($quote['cost_type'] ?? '（なし）') ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-700">
+                      <?= htmlspecialchars($quote['item_name'] ?? '（明細なし）') ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($quote['customer_email']) ?></td>
+                    <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($quote['sales_rep_name']) ?></td>
+                    <td class="px-2 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars(date('Y年m月d日 ', strtotime($quote['issue_date']))) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars(date('Y年m月d日 ', strtotime($quote['expiration_date']))) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($quote['subtotal']) ?></td>
+                    <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($quote['total_amount']) ?></td>
+                    <td class="px-2 py-4 text-sm">
+                      <span
+                        class="px-2 py-1 inline-flex text-xs font-semibold rounded-full <?= $quote['status'] === '確定' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' ?>">
+                        <?= htmlspecialchars($quote['status']) ?>
+                      </span>
+                    </td>
+                    <td class="px-2 py-4 text-right text-sm font-medium">
+                      <a href="/app/Quotes/view.php?id=<?= $quote['id'] ?>"
+                        class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
+                      <a href="/app/Quotes/edit.php?id=<?= $quote['id'] ?>"
+                        class="text-indigo-600 hover:text-indigo-900 mr-3">編集</a>
+                      <form action="/app/Quotes/delete.php" method="POST" class="inline"
+                        onsubmit="return confirm('「<?= htmlspecialchars($quote['customer_name']) ?>」の見積もりを削除しますか？');">
+
+                        <input type="hidden" name="id" value="<?= htmlspecialchars($quote['id']) ?>">
+                        <!-- CSRFトークンを送信 -->
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <!-- 削除ボタン -->
+                        <button type="submit" class="text-red-600 hover:text-red-900">
+                          削除
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
               <?php endif; ?>
             </tbody>
           </table>
@@ -179,61 +187,69 @@ try {
       <!-- スマホ用カード -->
       <div class="xl:hidden space-y-4">
         <?php foreach ($quotes as $quote): ?>
-        <div class="bg-white shadow rounded-lg p-4">
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">種別:</span>
-            <span><?= htmlspecialchars($quote['document_type']) ?></span>
+          <div class="bg-white shadow rounded-lg p-4">
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">種別:</span>
+              <span><?= htmlspecialchars($quote['document_type']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">区分:</span>
+              <span><?= htmlspecialchars($quote['cost_type'] ?? '（なし）') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">顧客名:</span>
+              <span><?= htmlspecialchars($quote['customer_name']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">商品名:</span>
+              <span> <?= htmlspecialchars($quote['item_name'] ?? '（明細なし）') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">顧客メールアドレス:</span>
+              <span><?= htmlspecialchars($quote['customer_email']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">営業担当:</span>
+              <span><?= htmlspecialchars($quote['sales_rep_name']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">発行日:</span>
+              <span><?= htmlspecialchars(date('Y-m-d', strtotime($quote['issue_date']))) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">有効期限:</span>
+              <span><?= htmlspecialchars(date('Y-m-d', strtotime($quote['expiration_date']))) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">小計（税込）:</span>
+              <span>¥<?= number_format($quote['subtotal']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">金額（税込）:</span>
+              <span>¥<?= number_format($quote['total_amount']) ?></span>
+            </div>
+            <div class="flex justify-between mb-2">
+              <span class="font-semibold">ステータス:</span>
+              <span><?= htmlspecialchars($quote['status']) ?></span>
+            </div>
+            <div class="flex justify-end space-x-2">
+              <a href="/app/Quotes/view.php?id=<?= $quote['id'] ?>"
+                class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
+              <a href="/app/Quotes/edit.php?id=<?= $quote['id'] ?>" class="text-indigo-600 hover:atext-indigo-900">編集
+              </a>
+              <form action="/app/Quotes/delete.php" method="POST" class="inline"
+                onsubmit="return confirm('「<?= htmlspecialchars($quote['customer_name']) ?>」の見積もりを削除しますか？');">
+
+                <input type="hidden" name="id" value="<?= htmlspecialchars($quote['id']) ?>">
+                <!-- CSRFトークンを送信 -->
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <!-- 削除ボタン -->
+                <button type="submit" class="text-red-600 hover:text-red-900">
+                  削除
+                </button>
+              </form>
+            </div>
           </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">区分:</span>
-            <span><?= htmlspecialchars($quote['cost_type'] ?? '（なし）') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">顧客名:</span>
-            <span><?= htmlspecialchars($quote['customer_name']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">商品名:</span>
-            <span> <?= htmlspecialchars($quote['item_name'] ?? '（明細なし）') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">顧客メールアドレス:</span>
-            <span><?= htmlspecialchars($quote['customer_email']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">営業担当:</span>
-            <span><?= htmlspecialchars($quote['sales_rep_name']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">発行日:</span>
-            <span><?= htmlspecialchars(date('Y-m-d', strtotime($quote['issue_date']))) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">有効期限:</span>
-            <span><?= htmlspecialchars(date('Y-m-d', strtotime($quote['expiration_date']))) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">小計（税込）:</span>
-            <span>¥<?= number_format($quote['subtotal']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">金額（税込）:</span>
-            <span>¥<?= number_format($quote['total_amount']) ?></span>
-          </div>
-          <div class="flex justify-between mb-2">
-            <span class="font-semibold">ステータス:</span>
-            <span><?= htmlspecialchars($quote['status']) ?></span>
-          </div>
-          <div class="flex justify-end space-x-2">
-            <a href="/app/Quotes/view.php?id=<?= $quote['id'] ?>"
-              class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
-            <a href="/app/Quotes/edit.php?id=<?= $quote['id'] ?>" class="text-indigo-600 hover:atext-indigo-900">編集
-            </a>
-            <a href="/app/Quotes/delete.php?id=<?= $quote['id'] ?>"
-              onclick="return confirm('「<?= htmlspecialchars($quote['customer_name']) ?>」の見積もり書を削除しますか？');"
-              class="text-red-600 hover:text-red-900">削除</a>
-          </div>
-        </div>
         <?php endforeach; ?>
       </div>
       <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/render_pagination.php'; ?>

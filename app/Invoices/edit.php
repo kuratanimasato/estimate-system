@@ -2,7 +2,17 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/db_connect.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/csrf.php';
 
+
+$csrf_token = get_csrf_token();
+// フォーム送信後の処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!validate_csrf_token($_POST["csrf_token"] ?? null)) {
+    echo "不正なリクエストです";
+    exit();
+  }
+}
 // URLパラメータからIDを取得
 $id = $_GET['id'] ?? null;
 if (!is_numeric($id)) {
@@ -174,25 +184,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <h1 class="text-2xl font-bold text-gray-900 mb-6 text-center">請求書編集画面</h1>
 
       <?php if (isset($errors['general'])): ?>
-      <div class="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
-        <?= htmlspecialchars($errors['general']) ?>
-      </div>
+        <div class="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
+          <?= htmlspecialchars($errors['general']) ?>
+        </div>
       <?php endif; ?>
 
       <form method="POST" action="edit.php? id=<?= htmlspecialchars($id) ?>"
         x-data="invoiceForm(<?= htmlspecialchars(json_encode($formData)) ?>, <?= htmlspecialchars(json_encode($itemsToDisplay)) ?>, <?= htmlspecialchars(json_encode($products)) ?>)"
         x-init="init()" @submit.prevent="submitForm($event)">
-
+        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
         <div class="mb-4">
           <label class="block font-medium text-sm mb-2">書類タイプ</label>
           <select name="document_type" x-model="form.document_type" class="w-full border rounded-lg px-3 py-2">
             <option value="">選択してください</option>
             <?php foreach (['見積書', '請求書', '納品書', '領収書'] as $type): ?>
-            <option value="<?= $type ?>"><?= $type ?></option>
+              <option value="<?= $type ?>"><?= $type ?></option>
             <?php endforeach; ?>
           </select>
           <?php if (isset($errors['document_type'])): ?>
-          <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['document_type']) ?></p>
+            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['document_type']) ?></p>
           <?php endif; ?>
         </div>
 
@@ -202,16 +212,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             class="w-full border rounded-lg px-3 py-2">
             <option value="">顧客を選択</option>
             <?php foreach ($customers as $customer): ?>
-            <option value="<?= $customer['id'] ?>" data-name="<?= htmlspecialchars($customer['company_name']) ?>"
-              data-email="<?= htmlspecialchars($customer['email']) ?>">
-              <?= htmlspecialchars($customer['company_name']) ?>
-            </option>
+              <option value="<?= $customer['id'] ?>" data-name="<?= htmlspecialchars($customer['company_name']) ?>"
+                data-email="<?= htmlspecialchars($customer['email']) ?>">
+                <?= htmlspecialchars($customer['company_name']) ?>
+              </option>
             <?php endforeach; ?>
           </select>
           <input type="hidden" name="customer_name" :value="form.customer_name">
           <input type="hidden" name="customer_email" :value="form.customer_email">
           <?php if (isset($errors['customer_id'])): ?>
-          <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['customer_id']) ?></p>
+            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['customer_id']) ?></p>
           <?php endif; ?>
         </div>
 
@@ -223,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             class="w-full border rounded-lg px-3 py-2 <?= isset($errors['customer_email']) ? 'border-red-500' : 'border-gray-300' ?>"
             placeholder="例: example@company.com">
           <?php if (isset($errors['customer_email'])): ?>
-          <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['customer_email']) ?></p>
+            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['customer_email']) ?></p>
           <?php endif; ?>
         </div>
         <div class="mb-4">
@@ -232,14 +242,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             class="w-full border rounded-lg px-3 py-2">
             <option value="">担当者を選択</option>
             <?php foreach ($sales_reps as $s): ?>
-            <option value="<?= $s['id'] ?>" data-name="<?= htmlspecialchars($s['name']) ?>">
-              <?= htmlspecialchars($s['name']) ?>
-            </option>
+              <option value="<?= $s['id'] ?>" data-name="<?= htmlspecialchars($s['name']) ?>">
+                <?= htmlspecialchars($s['name']) ?>
+              </option>
             <?php endforeach; ?>
           </select>
           <input type="hidden" name="sales_rep_name" :value="form.sales_rep_name">
           <?php if (isset($errors['sales_rep_id'])): ?>
-          <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['sales_rep_id']) ?></p>
+            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['sales_rep_id']) ?></p>
           <?php endif; ?>
         </div>
 
@@ -251,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="date" id="issue_date" name="issue_date" x-model="form.issue_date" @change="setExpirationDate"
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['issue_date']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg">
             <?php if (isset($errors['issue_date'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['issue_date']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['issue_date']) ?></p>
             <?php endif; ?>
           </div>
           <div class="mb-6">
@@ -261,7 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="date" id="expiration_date" name="expiration_date" x-model="form.expiration_date"
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['expiration_date']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg">
             <?php if (isset($errors['expiration_date'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['expiration_date']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['expiration_date']) ?></p>
             <?php endif; ?>
           </div>
         </div>
@@ -279,9 +289,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <h2 class="text-xl font-bold text-gray-800 mb-4 border-t pt-4">明細</h2>
         <?php if (isset($errors['items'])): ?>
-        <div class="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
-          <?= htmlspecialchars($errors['items']) ?>
-        </div>
+          <div class="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
+            <?= htmlspecialchars($errors['items']) ?>
+          </div>
         <?php endif; ?>
 
         <div class="mb-4">
@@ -365,84 +375,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </main>
 </div>
 <script>
-function invoiceForm(initialForm, initialItems, products) {
-  return {
-    form: {
-      ...initialForm,
-      items: initialItems.length ? initialItems : []
-    },
-    products: products,
-    selectedProductId: '',
-    subtotal: 0,
-    tax: 0,
-    totalAmount: 0,
+  function invoiceForm(initialForm, initialItems, products) {
+    return {
+      form: {
+        ...initialForm,
+        items: initialItems.length ? initialItems : []
+      },
+      products: products,
+      selectedProductId: '',
+      subtotal: 0,
+      tax: 0,
+      totalAmount: 0,
 
-    init() {
-      this.calculateTotals();
-    },
+      init() {
+        this.calculateTotals();
+      },
 
-    calculateTotals() {
-      this.subtotal = this.form.items.reduce((sum, item) => {
-        const quantity = Number(item.quantity) || 0;
-        const unitPrice = Number(item.unit_price) || 0;
-        return sum + quantity * unitPrice;
-      }, 0);
+      calculateTotals() {
+        this.subtotal = this.form.items.reduce((sum, item) => {
+          const quantity = Number(item.quantity) || 0;
+          const unitPrice = Number(item.unit_price) || 0;
+          return sum + quantity * unitPrice;
+        }, 0);
 
-      this.tax = this.subtotal * 0.1;
-      this.totalAmount = this.subtotal + this.tax;
-    },
+        this.tax = this.subtotal * 0.1;
+        this.totalAmount = this.subtotal + this.tax;
+      },
 
-    addItem() {
-      const product = this.products.find(p => p.id == this.selectedProductId);
-      if (!product) return;
+      addItem() {
+        const product = this.products.find(p => p.id == this.selectedProductId);
+        if (!product) return;
 
-      const existing = this.form.items.find(i => i.item_id == product.id);
-      if (existing) {
-        existing.quantity++;
-      } else {
-        this.form.items.push({
-          _id: Date.now(),
-          item_id: product.id,
-          item_name: product.item_name,
-          unit_price: product.unit_price,
-          quantity: 1,
-          cost_type: '月額利用料'
-        });
+        const existing = this.form.items.find(i => i.item_id == product.id);
+        if (existing) {
+          existing.quantity++;
+        } else {
+          this.form.items.push({
+            _id: Date.now(),
+            item_id: product.id,
+            item_name: product.item_name,
+            unit_price: product.unit_price,
+            quantity: 1,
+            cost_type: '月額利用料'
+          });
+        }
+
+        this.selectedProductId = '';
+        this.calculateTotals();
+      },
+
+      removeItem(index) {
+        this.form.items.splice(index, 1);
+        this.calculateTotals();
+      },
+
+      updateCustomer(event) {
+        const selected = event.target.selectedOptions[0];
+        this.form.customer_name = selected.dataset.name || '';
+        this.form.customer_email = selected.dataset.email || '';
+      },
+
+      updateSalesRep(event) {
+        const selected = event.target.selectedOptions[0];
+        this.form.sales_rep_name = selected.dataset.name || '';
+      },
+
+      setExpirationDate() {
+        if (this.form.issue_date) {
+          const issue = new Date(this.form.issue_date);
+          issue.setDate(issue.getDate() + 30);
+          this.form.expiration_date = issue.toISOString().split('T')[0];
+        }
+      },
+
+      submitForm() {
+        this.calculateTotals();
+        this.$el.closest('form').submit();
       }
-
-      this.selectedProductId = '';
-      this.calculateTotals();
-    },
-
-    removeItem(index) {
-      this.form.items.splice(index, 1);
-      this.calculateTotals();
-    },
-
-    updateCustomer(event) {
-      const selected = event.target.selectedOptions[0];
-      this.form.customer_name = selected.dataset.name || '';
-      this.form.customer_email = selected.dataset.email || '';
-    },
-
-    updateSalesRep(event) {
-      const selected = event.target.selectedOptions[0];
-      this.form.sales_rep_name = selected.dataset.name || '';
-    },
-
-    setExpirationDate() {
-      if (this.form.issue_date) {
-        const issue = new Date(this.form.issue_date);
-        issue.setDate(issue.getDate() + 30);
-        this.form.expiration_date = issue.toISOString().split('T')[0];
-      }
-    },
-
-    submitForm() {
-      this.calculateTotals();
-      this.$el.closest('form').submit();
-    }
-  };
-}
+    };
+  }
 </script>
 <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/footer.php'; ?>

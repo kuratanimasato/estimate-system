@@ -1,6 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/csrf.php';
 // 現在アクティブなページをサイドバーに伝えるための変数
 $current_page = 'Products';
 
@@ -48,12 +48,18 @@ $fieldLabels = [
   'cost_type' => '費用区分'
 
 ];
+$csrf_token = get_csrf_token();
+
 // フォーム送信後の処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!validate_csrf_token($_POST["csrf_token"] ?? null)) {
+    echo "不正なリクエストです";
+    exit();
+  }
   $formData = [
-    'item_name' => trim($_POST['item_name'] ?? ''),
-    'unit_price' => trim($_POST['unit_price'] ?? ''),
-    'cost_type' => trim($_POST['cost_type'] ?? ''),
+    'item_name' => htmlspecialchars(trim($_POST['item_name'] ?? ''), ENT_QUOTES, 'UTF-8'),
+    'unit_price' => htmlspecialchars(trim($_POST['unit_price'] ?? ''), ENT_QUOTES, 'UTF-8'),
+    'cost_type' => htmlspecialchars(trim($_POST['cost_type'] ?? ''), ENT_QUOTES, 'UTF-8'),
   ];
 
   // バリデーション
@@ -95,12 +101,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1 class="text-3xl font-extrabold text-gray-900 mb-8 text-center">新規商品登録</h1>
 
         <?php if (isset($errors['general'])): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
-          <?= htmlspecialchars($errors['general']) ?>
-        </div>
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4">
+            <?= htmlspecialchars($errors['general']) ?>
+          </div>
         <?php endif; ?>
 
         <form method="POST" action="create.php">
+          <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
           <!-- 商品名 -->
           <div class="mb-6">
             <label for="item_name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -110,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['item_name']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg"
               placeholder="クラウドサービス利用料">
             <?php if (isset($errors['item_name'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['item_name']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['item_name']) ?></p>
             <?php endif; ?>
           </div>
 
@@ -124,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['unit_price']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg"
               placeholder="例: 1200" step="1" min="0">
             <?php if (isset($errors['unit_price'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['unit_price']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['unit_price']) ?></p>
             <?php endif; ?>
           </div>
 
@@ -141,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <option value="機材費" <?= $formData['cost_type'] === '機材' ? 'selected' : '' ?>>機材費</option>
             </select>
             <?php if (isset($errors['cost_type'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['cost_type']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['cost_type']) ?></p>
             <?php endif; ?>
           </div>
 

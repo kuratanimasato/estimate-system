@@ -76,39 +76,44 @@ try {
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <?php if (empty($items)): ?>
-              <tr>
-                <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
-                  登録されている商品はありません。
-                </td>
-              </tr>
+                <tr>
+                  <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                    登録されている商品はありません。
+                  </td>
+                </tr>
               <?php else: ?>
-              <?php foreach ($items as $item): ?>
-              <tr>
-                <td class="px-6 py-4 text-sm font-medium text-gray-900">
-                  <?= htmlspecialchars($item['item_name']) ?>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars($item['cost_type']) ?>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500">
-                  <?= number_format((float) $item['unit_price']) ?>
-                </td>
+                <?php foreach ($items as $item): ?>
+                  <tr>
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                      <?= htmlspecialchars($item['item_name']) ?>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars($item['cost_type']) ?>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      <?= number_format((float) $item['unit_price']) ?>
+                    </td>
 
-                <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
-                  <?= (new DateTime($item['created_at']))->format('Y年m月d日') ?>
-                </td>
-                <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
-                  <?= (new DateTime($item['updated_at']))->format('Y年m月d日') ?>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap  text-sm font-medium">
-                  <a href="/app/Products/edit.php?id=<?= $item['id'] ?>"
-                    class="text-indigo-600 hover:text-indigo-900 mr-4">編集</a>
-                  <a href="/app/Products/delete.php?id=<?= $item['id'] ?>"
-                    onclick="return confirm('「<?= htmlspecialchars($item['item_name']) ?>」を削除しますか？');"
-                    class="text-red-600 hover:text-red-900">削除</a>
-                </td>
-              </tr>
-              <?php endforeach; ?>
+                    <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
+                      <?= (new DateTime($item['created_at']))->format('Y年m月d日') ?>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">
+                      <?= (new DateTime($item['updated_at']))->format('Y年m月d日') ?>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap  text-sm font-medium">
+                      <a href="/app/Products/edit.php?id=<?= $item['id'] ?>"
+                        class="text-indigo-600 hover:text-indigo-900 mr-4">編集</a>
+                      <form action="/app/Products/delete.php" method="POST" class="inline"
+                        onsubmit="return confirm('「<?= htmlspecialchars($item['item_name']) ?>」を削除しますか？');">
+                        <input type="hidden" name="id" value="<?= htmlspecialchars($item['id']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <button type="submit" class="text-red-600 hover:text-red-900">
+                          削除
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
               <?php endif; ?>
             </tbody>
           </table>
@@ -117,30 +122,32 @@ try {
       <!-- スマホ用カード表示 -->
       <div class="md:hidden space-y-4">
         <?php foreach ($items as $item): ?>
-        <div class="bg-white shadow rounded-lg p-4">
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">項目名:</span>
-            <span> <?= htmlspecialchars($item['item_name']) ?></span>
+          <div class="bg-white shadow rounded-lg p-4">
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">項目名:</span>
+              <span> <?= htmlspecialchars($item['item_name']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">費用区分:</span>
+              <span> <?= htmlspecialchars($item['cost_type']) ?></span>
+            </div>
+            <div class="flex justify-between mb-2">
+              <span class="font-semibold">登録日:</span>
+              <span> <?= (new DateTime($item['created_at']))->format('Y-m-d H:i') ?></span>
+            </div>
+            <div class="flex justify-between mb-2">
+              <span class="font-semibold">最終更新日:</span>
+              <span> <?= (new DateTime($item['updated_at']))->format('Y-m-d H:i') ?></span>
+            </div>
+            <div class="flex justify-end space-x-2">
+              <a href="/app/Products/edit.php?id=<?= $item['id'] ?>" class="text-indigo-600 hover:text-indigo-900">編集</a>
+              <form action="/app/Products/delete.php" method="POST" class="inline"
+                onsubmit="return confirm('「<?= htmlspecialchars($item['item_name']) ?>」を削除しますか？');">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
+              </form>
+            </div>
           </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">費用区分:</span>
-            <span> <?= htmlspecialchars($item['cost_type']) ?></span>
-          </div>
-          <div class="flex justify-between mb-2">
-            <span class="font-semibold">登録日:</span>
-            <span> <?= (new DateTime($item['created_at']))->format('Y-m-d H:i') ?></span>
-          </div>
-          <div class="flex justify-between mb-2">
-            <span class="font-semibold">最終更新日:</span>
-            <span> <?= (new DateTime($item['updated_at']))->format('Y-m-d H:i') ?></span>
-          </div>
-          <div class="flex justify-end space-x-2">
-            <a href="/app/Products/edit.php?id=<?= $item['id'] ?>" class="text-indigo-600 hover:text-indigo-900">編集</a>
-            <a href="/app/Products/delete.php?id=<?= $item['id'] ?>"
-              onclick="return confirm('「<?= htmlspecialchars($item['item_name']) ?>」商品を削除しますか？');"
-              class="text-red-600 hover:text-red-900">削除</a>
-          </div>
-        </div>
         <?php endforeach; ?>
       </div>
       <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/render_pagination.php'; ?>

@@ -124,53 +124,58 @@ try {
 
             <tbody class="bg-white divide-y divide-gray-200">
               <?php if (empty($invoices)): ?>
-              <tr>
-                <td colspan="10" class="px-6 py-4 text-center  text-sm text-gray-500 ">
-                  登録されている請求はありません。
-                </td>
-              </tr>
+                <tr>
+                  <td colspan="10" class="px-6 py-4 text-center  text-sm text-gray-500 ">
+                    登録されている請求はありません。
+                  </td>
+                </tr>
               <?php else: ?>
-              <?php foreach ($invoices as $invoice): ?>
-              <tr class="hover:bg-gray-50 transition whitespace-nowrap">
-                <td class="px-4 py-4 text-sm font-medium text-gray-900">
-                  <?= htmlspecialchars($invoice['document_type']) ?>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-700">
-                  <?= htmlspecialchars($invoice['customer_name']) ?><br>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-700">
-                  <?= htmlspecialchars($invoice['cost_type'] ?? '（なし）') ?>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-700">
-                  <?= htmlspecialchars($invoice['item_name'] ?? '（明細なし）') ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($invoice['customer_email']) ?></td>
-                <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($invoice['sales_rep_name']) ?></td>
-                <td class="px-2 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars(date('Y年m月d日 ', strtotime($invoice['issue_date']))) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars(date('Y年m月d日 ', strtotime($invoice['expiration_date']))) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($invoice['subtotal']) ?></td>
-                <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($invoice['total_amount']) ?></td>
-                <td class="px-2 py-4 text-sm">
-                  <span
-                    class="px-2 py-1 inline-flex text-xs font-semibold rounded-full <?= $invoice['status'] === '未払い' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' ?>">
-                    <?= htmlspecialchars($invoice['status']) ?>
-                  </span>
-                </td>
-                <td class="px-2 py-4 text-right text-sm font-medium">
-                  <a href="/app/Invoices/view.php?id=<?= $invoice['id'] ?>"
-                    class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
-                  <a href="/app/Invoices/edit.php?id=<?= $invoice['id'] ?>"
-                    class="text-indigo-600 hover:text-indigo-900 mr-3">編集</a>
-                  <a href="/app/Invoices/delete.php?id=<?= $invoice['id'] ?>"
-                    onclick="return confirm('「<?= htmlspecialchars($invoice['customer_name']) ?>」の請求書を削除しますか？');"
-                    class="text-red-600 hover:text-red-900">削除</a>
-                </td>
-              </tr>
-              <?php endforeach; ?>
+                <?php foreach ($invoices as $invoice): ?>
+                  <tr class="hover:bg-gray-50 transition whitespace-nowrap">
+                    <td class="px-4 py-4 text-sm font-medium text-gray-900">
+                      <?= htmlspecialchars($invoice['document_type']) ?>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-700">
+                      <?= htmlspecialchars($invoice['customer_name']) ?><br>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-700">
+                      <?= htmlspecialchars($invoice['cost_type'] ?? '（なし）') ?>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-700">
+                      <?= htmlspecialchars($invoice['item_name'] ?? '（明細なし）') ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($invoice['customer_email']) ?></td>
+                    <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($invoice['sales_rep_name']) ?></td>
+                    <td class="px-2 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars(date('Y年m月d日 ', strtotime($invoice['issue_date']))) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars(date('Y年m月d日 ', strtotime($invoice['expiration_date']))) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($invoice['subtotal']) ?></td>
+                    <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($invoice['total_amount']) ?></td>
+                    <td class="px-2 py-4 text-sm">
+                      <span
+                        class="px-2 py-1 inline-flex text-xs font-semibold rounded-full <?= $invoice['status'] === '未払い' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' ?>">
+                        <?= htmlspecialchars($invoice['status']) ?>
+                      </span>
+                    </td>
+                    <td class="px-2 py-4 text-right text-sm font-medium">
+                      <a href="/app/Invoices/view.php?id=<?= $invoice['id'] ?>"
+                        class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
+                      <a href="/app/Invoices/edit.php?id=<?= $invoice['id'] ?>"
+                        class="text-indigo-600 hover:text-indigo-900 mr-3">編集</a>
+                      <form action="/app/Invoices/delete.php" method="POST" class="inline"
+                        onsubmit="return confirm('「<?= htmlspecialchars($invoice['customer_name']) ?>」の請求書を削除しますか？');">
+                        <input type="hidden" name="id" value="<?= htmlspecialchars($invoice['id']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <button type="submit" class="text-red-600 hover:text-red-900">
+                          削除
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
               <?php endif; ?>
             </tbody>
           </table>
@@ -179,61 +184,66 @@ try {
       <!-- スマホ用カード -->
       <div class="xl:hidden space-y-4">
         <?php foreach ($invoices as $invoice): ?>
-        <div class="bg-white shadow rounded-lg p-4">
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">種別:</span>
-            <span><?= htmlspecialchars($invoice['document_type']) ?></span>
+          <div class="bg-white shadow rounded-lg p-4">
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">種別:</span>
+              <span><?= htmlspecialchars($invoice['document_type']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">区分:</span>
+              <span><?= htmlspecialchars($invoice['cost_type'] ?? '（なし）') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">顧客名:</span>
+              <span><?= htmlspecialchars($invoice['customer_name']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">商品名:</span>
+              <span> <?= htmlspecialchars($invoice['item_name'] ?? '（明細なし）') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">顧客メールアドレス:</span>
+              <span><?= htmlspecialchars($invoice['customer_email']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">営業担当:</span>
+              <span><?= htmlspecialchars($invoice['sales_rep_name']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">発行日:</span>
+              <span><?= htmlspecialchars(date('Y-m-d', strtotime($invoice['issue_date']))) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">支払い期限:</span>
+              <span><?= htmlspecialchars(date('Y-m-d', strtotime($invoice['expiration_date']))) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">小計（税込）:</span>
+              <span>¥<?= number_format($invoice['subtotal']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">金額（税込）:</span>
+              <span>¥<?= number_format($invoice['total_amount']) ?></span>
+            </div>
+            <div class="flex justify-between mb-2">
+              <span class="font-semibold">ステータス:</span>
+              <span><?= htmlspecialchars($invoice['status']) ?></span>
+            </div>
+            <div class="flex justify-end space-x-2">
+              <a href="/app/Invoices/view.php?id=<?= $invoice['id'] ?>"
+                class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
+              <a href="/app/Invoices/edit.php?id=<?= $invoice['id'] ?>" class="text-indigo-600 hover:atext-indigo-900">編集
+              </a>
+              <form action="/app/Invoices/delete.php" method="POST" class="inline"
+                onsubmit="return confirm('「<?= htmlspecialchars($invoice['customer_name']) ?>」の請求書を削除しますか？');">
+                <input type="hidden" name="id" value="<?= htmlspecialchars($invoice['id']) ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <button type="submit" class="text-red-600 hover:text-red-900">
+                  削除
+                </button>
+              </form>
+            </div>
           </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">区分:</span>
-            <span><?= htmlspecialchars($invoice['cost_type'] ?? '（なし）') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">顧客名:</span>
-            <span><?= htmlspecialchars($invoice['customer_name']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">商品名:</span>
-            <span> <?= htmlspecialchars($invoice['item_name'] ?? '（明細なし）') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">顧客メールアドレス:</span>
-            <span><?= htmlspecialchars($invoice['customer_email']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">営業担当:</span>
-            <span><?= htmlspecialchars($invoice['sales_rep_name']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">発行日:</span>
-            <span><?= htmlspecialchars(date('Y-m-d', strtotime($invoice['issue_date']))) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">支払い期限:</span>
-            <span><?= htmlspecialchars(date('Y-m-d', strtotime($invoice['expiration_date']))) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">小計（税込）:</span>
-            <span>¥<?= number_format($invoice['subtotal']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">金額（税込）:</span>
-            <span>¥<?= number_format($invoice['total_amount']) ?></span>
-          </div>
-          <div class="flex justify-between mb-2">
-            <span class="font-semibold">ステータス:</span>
-            <span><?= htmlspecialchars($invoice['status']) ?></span>
-          </div>
-          <div class="flex justify-end space-x-2">
-            <a href="/app/Invoices/view.php?id=<?= $invoice['id'] ?>"
-              class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
-            <a href="/app/Invoices/edit.php?id=<?= $invoice['id'] ?>" class="text-indigo-600 hover:atext-indigo-900">編集
-            </a>
-            <a href="/app/Invoices/delete.php?id=<?= $invoice['id'] ?>"
-              onclick="return confirm('「<?= htmlspecialchars($invoice['customer_name']) ?>」の請求書を削除しますか？');"
-              class="text-red-600 hover:text-red-900">削除</a>
-          </div>
-        </div>
         <?php endforeach; ?>
       </div>
       <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/render_pagination.php'; ?>

@@ -128,11 +128,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
                         class="text-indigo-600 hover:text-indigo-900 mr-4 transition duration-150">
                         編集
                       </a>
-                      <a href="delete.php?id=<?= $customer['id'] ?>"
-                        onclick="return confirm('「<?= htmlspecialchars($customer['company_name']) ?>」を本当に削除してもよろしいですか？');"
-                        class="text-red-600 hover:text-red-900 transition duration-150">
-                        削除
-                      </a>
+                      <form action="delete.php" method="POST"
+                        onsubmit="return confirm('「<?= htmlspecialchars($customer['company_name']) ?>」を本当に削除してもよろしいですか？');"
+                        style="display:inline;">
+                        <input type="hidden" name="id" value="<?= htmlspecialchars($customer['id']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <button type="submit" class="text-red-600 hover:text-red-900 transition duration-150">
+                          削除
+                        </button>
+                      </form>
                     </td>
                   </tr>
                 <?php endforeach; ?>
@@ -159,9 +163,15 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
             <div class="flex justify-end space-x-2">
               <a href="/app/Customers/edit.php?id=<?= $customer['id'] ?>"
                 class="text-indigo-600 hover:text-indigo-900">編集</a>
-              <a href="/app/Customers/delete.php?id=<?= $customer['id'] ?>"
-                onclick="return confirm('「<?= htmlspecialchars($customer['company_name']) ?>」を削除しますか？');"
-                class="text-red-600 hover:text-red-900">削除</a>
+              <form action="delete.php" method="POST"
+                onsubmit="return confirm('「<?= htmlspecialchars($customer['company_name']) ?>」を本当に削除してもよろしいですか？');"
+                style="display:inline;">
+                <input type="hidden" name="id" value="<?= htmlspecialchars($customer['id']) ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <button type="submit" class="text-red-600 hover:text-red-900 transition duration-150">
+                  削除
+                </button>
+              </form>
             </div>
           </div>
         <?php endforeach; ?>

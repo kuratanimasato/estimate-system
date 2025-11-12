@@ -124,47 +124,50 @@ try {
 
             <tbody class="bg-white divide-y divide-gray-200">
               <?php if (empty($receipts)): ?>
-              <tr>
-                <td colspan="10" class="px-6 py-4 text-center text-sm text-gray-500">
-                  登録されている領収書はありません。
-                </td>
-              </tr>
+                <tr>
+                  <td colspan="10" class="px-6 py-4 text-center text-sm text-gray-500">
+                    登録されている領収書はありません。
+                  </td>
+                </tr>
               <?php else: ?>
-              <?php foreach ($receipts as $receipt): ?>
-              <tr class="hover:bg-gray-50 transition whitespace-nowrap">
-                <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['document_type'] ?? '領収書') ?>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-900"><?= htmlspecialchars($receipt['customer_name']) ?></td>
-                <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['item_names'] ?? '（明細なし）') ?>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['customer_email'] ?? '-') ?>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['sales_rep_name'] ?? '-') ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars(date('Y年m月d日 ', strtotime($receipt['issue_date']))) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars(date('Y年m月d日 ', strtotime($receipt['received_date']))) ?>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['payment_method'] ?? '-') ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($receipt['subtotal']) ?></td>
-                <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($receipt['total_amount']) ?></td>
-                <td class="px-4 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars($receipt['remarks'] ?? '-') ?>
-                </td>
-                <td class="px-2 py-4 text-right text-sm font-medium">
-                  <a href="/app/receipts/view.php?id=<?= $receipt['id'] ?>"
-                    class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
-                  <a href="/app/receipts/edit.php?id=<?= $receipt['id'] ?>"
-                    class="text-indigo-600 hover:text-indigo-900 mr-3">編集</a>
-                  <a href="/app/receipts/delete.php?id=<?= $receipt['id'] ?>"
-                    onclick="return confirm('「<?= htmlspecialchars($receipt['customer_name']) ?>」の領収書を削除しますか？');"
-                    class="text-red-600 hover:text-red-900">削除</a>
-                </td>
-              </tr>
-              <?php endforeach; ?>
+                <?php foreach ($receipts as $receipt): ?>
+                  <tr class="hover:bg-gray-50 transition whitespace-nowrap">
+                    <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['document_type'] ?? '領収書') ?>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-900"><?= htmlspecialchars($receipt['customer_name']) ?></td>
+                    <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['item_names'] ?? '（明細なし）') ?>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['customer_email'] ?? '-') ?>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['sales_rep_name'] ?? '-') ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars(date('Y年m月d日 ', strtotime($receipt['issue_date']))) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars(date('Y年m月d日 ', strtotime($receipt['received_date']))) ?>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-700"><?= htmlspecialchars($receipt['payment_method'] ?? '-') ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($receipt['subtotal']) ?></td>
+                    <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($receipt['total_amount']) ?></td>
+                    <td class="px-4 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars($receipt['remarks'] ?? '-') ?>
+                    </td>
+                    <td class="px-2 py-4 text-right text-sm font-medium">
+                      <a href="/app/receipts/view.php?id=<?= $receipt['id'] ?>"
+                        class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
+                      <a href="/app/receipts/edit.php?id=<?= $receipt['id'] ?>"
+                        class="text-indigo-600 hover:text-indigo-900 mr-3">編集</a>
+                      <form action="/app/receipts/delete.php" method="POST" class="inline"
+                        onsubmit="return confirm('「<?= htmlspecialchars($receipt['customer_name']) ?>」の領収書を削除しますか？');">
+                        <input type="hidden" name="id" value="<?= htmlspecialchars($receipt['id']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
+                      </form>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
               <?php endif; ?>
             </tbody>
           </table>
@@ -174,61 +177,64 @@ try {
       <!-- スマホ用カード -->
       <div class="xl:hidden space-y-4">
         <?php foreach ($receipts as $receipt): ?>
-        <div class="bg-white shadow rounded-lg p-4">
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">種別:</span>
-            <span><?= htmlspecialchars($receipt['document_type'] ?? '領収書') ?></span>
+          <div class="bg-white shadow rounded-lg p-4">
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">種別:</span>
+              <span><?= htmlspecialchars($receipt['document_type'] ?? '領収書') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">顧客名:</span>
+              <span><?= htmlspecialchars($receipt['customer_name']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">商品名:</span>
+              <span><?= htmlspecialchars($receipt['item_names'] ?? '（明細なし）') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">顧客メール:</span>
+              <span><?= htmlspecialchars($receipt['customer_email'] ?? '-') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">営業担当:</span>
+              <span><?= htmlspecialchars($receipt['sales_rep_name'] ?? '-') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">発行日:</span>
+              <span><?= htmlspecialchars(date('Y-m-d', strtotime($receipt['issue_date']))) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">受領日:</span>
+              <span><?= htmlspecialchars(date('Y-m-d', strtotime($receipt['received_date']))) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">支払い方法:</span>
+              <span><?= htmlspecialchars($receipt['payment_method'] ?? '-') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">受領日:</span>
+              <span><?= htmlspecialchars($receipt['received_date'] ?? '-') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">小計:</span>
+              <span>¥<?= number_format($receipt['subtotal']) ?></span>
+            </div>
+            <div class="flex justify-between mb-2">
+              <span class="font-semibold">合計:</span>
+              <span>¥<?= number_format($receipt['total_amount']) ?></span>
+            </div>
+            <div class="flex justify-end space-x-2">
+              <a href="/app/receipts/view.php?id=<?= $receipt['id'] ?>"
+                class="text-indigo-600 hover:text-indigo-900">詳細</a>
+              <a href="/app/receipts/edit.php?id=<?= $receipt['id'] ?>"
+                class="text-indigo-600 hover:text-indigo-900">編集</a>
+              <form action="/app/receipts/delete.php" method="POST" class="inline"
+                onsubmit="return confirm('「<?= htmlspecialchars($receipt['customer_name']) ?>」の領収書を削除しますか？');">
+                <input type="hidden" name="id" value="<?= htmlspecialchars($receipt['id']) ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
+              </form>
+            </div>
           </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">顧客名:</span>
-            <span><?= htmlspecialchars($receipt['customer_name']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">商品名:</span>
-            <span><?= htmlspecialchars($receipt['item_names'] ?? '（明細なし）') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">顧客メール:</span>
-            <span><?= htmlspecialchars($receipt['customer_email'] ?? '-') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">営業担当:</span>
-            <span><?= htmlspecialchars($receipt['sales_rep_name'] ?? '-') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">発行日:</span>
-            <span><?= htmlspecialchars(date('Y-m-d', strtotime($receipt['issue_date']))) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">受領日:</span>
-            <span><?= htmlspecialchars(date('Y-m-d', strtotime($receipt['received_date']))) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">支払い方法:</span>
-            <span><?= htmlspecialchars($receipt['payment_method'] ?? '-') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">受領日:</span>
-            <span><?= htmlspecialchars($receipt['received_date'] ?? '-') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">小計:</span>
-            <span>¥<?= number_format($receipt['subtotal']) ?></span>
-          </div>
-          <div class="flex justify-between mb-2">
-            <span class="font-semibold">合計:</span>
-            <span>¥<?= number_format($receipt['total_amount']) ?></span>
-          </div>
-          <div class="flex justify-end space-x-2">
-            <a href="/app/receipts/view.php?id=<?= $receipt['id'] ?>"
-              class="text-indigo-600 hover:text-indigo-900">詳細</a>
-            <a href="/app/receipts/edit.php?id=<?= $receipt['id'] ?>"
-              class="text-indigo-600 hover:text-indigo-900">編集</a>
-            <a href="/app/receipts/delete.php?id=<?= $receipt['id'] ?>"
-              onclick="return confirm('「<?= htmlspecialchars($receipt['customer_name']) ?>」の領収書を削除しますか？');"
-              class="text-red-600 hover:text-red-900">削除</a>
-          </div>
-        </div>
         <?php endforeach; ?>
       </div>
 

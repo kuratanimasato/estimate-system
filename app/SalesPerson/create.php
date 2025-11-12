@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/csrf.php';
 // 現在アクティブなページをサイドバーに伝えるための変数 (このページでは不要ですが、構造を維持)
 $current_page = 'SalesPerson';
 
@@ -22,12 +23,19 @@ $rules = [
     ]
   ],
 ];
+
+$csrf_token = get_csrf_token();
 // フォーム送信後の処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!validate_csrf_token($_POST["csrf_token"] ?? null)) {
+    echo "不正なリクエストです";
+    exit();
+  }
   // フォームから送信されたデータを取得
   $formData = [
-    'name' => trim($_POST['name'] ?? ''),
+    'name' => htmlspecialchars(trim($_POST['name'] ?? ''), ENT_QUOTES, 'UTF-8'),
   ];
+
 
   // バリデーションルールの定義
   $errors = validateForm($formData, $rules, [], $pdo, 'sales_reps');
@@ -76,25 +84,26 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
         </h1>
         <!-- 一般的なエラー表示 -->
         <?php if (isset($errors['general'])): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
-          <strong class="font-bold">エラーが発生しました:</strong>
-          <ul class="mt-1 list-disc list-inside">
-            <li><?= htmlspecialchars($errors['general']) ?></li>
-          </ul>
-        </div>
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+            <strong class="font-bold">エラーが発生しました:</strong>
+            <ul class="mt-1 list-disc list-inside">
+              <li><?= htmlspecialchars($errors['general']) ?></li>
+            </ul>
+          </div>
         <?php endif; ?>
         <!-- フォーム -->
         <form id="formValidation" method="POST" action="create.php">
+          <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
           <!-- 担当名-->
           <div class="mb-6">
             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
               担当名 <span class="text-red-500">*</span>
             </label>
-            <input type="text" id="name" name="name" value="<?= htmlspecialchars($formData['name']) ?>"
+            <input type="text" id="id" name="name" value="<?= htmlspecialchars($formData['name']) ?>"
               class="mt-1 block w-full px-4 py-2 border <?= isset($errors['name']) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="担当名を入力してください" maxlength="30">
             <?php if (isset($errors['name'])): ?>
-            <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['name']) ?></p>
+              <p class="mt-2 text-sm text-red-600"><?= htmlspecialchars($errors['name']) ?></p>
             <?php endif; ?>
           </div>
 

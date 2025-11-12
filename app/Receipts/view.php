@@ -109,45 +109,36 @@ try {
         <h2 class="text-xl font-semibold mb-4">明細情報</h2>
 
         <?php if (empty($details)): ?>
-        <p class="text-gray-500 text-sm">明細が登録されていません。</p>
+          <p class="text-gray-500 text-sm">明細が登録されていません。</p>
         <?php else: ?>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">品名</th>
-                <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">区分</th>
-                <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">数量</th>
-                <th class="px-4 py-2 text-right text-sm font-medium text-gray-500">単価</th>
-                <th class="px-4 py-2 text-right text-sm font-medium text-gray-500">小計</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <?php foreach ($details as $detail): ?>
-              <tr>
-                <td class="px-4 py-2 text-sm text-gray-900"><?= htmlspecialchars($detail['item_name']) ?></td>
-                <td class="px-4 py-2 text-sm text-gray-700"><?= htmlspecialchars($detail['cost_type']) ?></td>
-                <td class="px-4 py-2 text-sm text-gray-700"><?= htmlspecialchars($detail['quantity']) ?>個</td>
-                <td class="px-4 py-2 text-sm text-right text-gray-700">¥<?= number_format($detail['unit_price']) ?></td>
-                <td class="px-4 py-2 text-sm text-right text-gray-900 font-medium">
-                  ¥<?= number_format($detail['line_total']) ?>
-                </td>
-              </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
-        </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">品名</th>
+                  <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">区分</th>
+                  <th class="px-4 py-2 text-left text-sm font-medium text-gray-500">数量</th>
+                  <th class="px-4 py-2 text-right text-sm font-medium text-gray-500">単価</th>
+                  <th class="px-4 py-2 text-right text-sm font-medium text-gray-500">小計</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <?php foreach ($details as $detail): ?>
+                  <tr>
+                    <td class="px-4 py-2 text-sm text-gray-900"><?= htmlspecialchars($detail['item_name']) ?></td>
+                    <td class="px-4 py-2 text-sm text-gray-700"><?= htmlspecialchars($detail['cost_type']) ?></td>
+                    <td class="px-4 py-2 text-sm text-gray-700"><?= htmlspecialchars($detail['quantity']) ?>個</td>
+                    <td class="px-4 py-2 text-sm text-right text-gray-700">¥<?= number_format($detail['unit_price']) ?></td>
+                    <td class="px-4 py-2 text-sm text-right text-gray-900 font-medium">
+                      ¥<?= number_format($detail['line_total']) ?>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
         <?php endif; ?>
       </div>
-
-      <!-- 操作ボタン -->
-      <div class="mt-6 flex justify-end space-x-4">
-        <a href="/app/receipts/edit.php?id=<?= $receipt['id'] ?>"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow">編集</a>
-        <a href="/app/receipts/delete.php?id=<?= $receipt['id'] ?>" onclick="return confirm('削除してもよろしいですか？');"
-          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow">削除</a>
-      </div>
-    </div>
   </main>
 </div>
 

@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/functions.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/db_connect.php';
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/csrf.php';
 // 現在ページ
 $current_page = 'Receipts';
 
@@ -33,8 +33,14 @@ $errors = [];
 
 $itemsToDisplay = [];
 
+$csrf_token = get_csrf_token();
+
 // POST処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!validate_csrf_token($_POST["csrf_token"] ?? null)) {
+    echo "不正なリクエストです";
+    exit();
+  }
   // POST反映
   foreach ($formData as $key => $val) {
     $formData[$key] = $_POST[$key] ?? $val;
@@ -221,8 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       error_log($e->getMessage());
     }
   }
-
-  $itemsToDisplay = $items;
+  $itemsToDisplay = isset($_POST['items']) ? $_POST['items'] : [];
 }
 ?>
 
@@ -242,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <form method="POST" action="create.php"
         x-data="quoteForm(<?= htmlspecialchars(json_encode($formData)) ?>, <?= htmlspecialchars(json_encode($itemsToDisplay)) ?>, <?= htmlspecialchars(json_encode($products)) ?>)"
         @submit.prevent="submitForm">
-
+        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
         <div class="mb-4">
           <label class="block font-medium text-sm mb-2">書類タイプ</label>
           <select name="document_type" x-model="form.document_type" class="w-full border rounded-lg px-3 py-2">

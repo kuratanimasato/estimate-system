@@ -126,55 +126,58 @@ SELECT
 
             <tbody class="bg-white divide-y divide-gray-200">
               <?php if (empty($delivery_notes)): ?>
-              <tr>
-                <td colspan="10" class="px-6 py-4 text-center  text-sm text-gray-500 ">
-                  登録されている請求はありません。
-                </td>
-              </tr>
+                <tr>
+                  <td colspan="10" class="px-6 py-4 text-center  text-sm text-gray-500 ">
+                    登録されている請求はありません。
+                  </td>
+                </tr>
               <?php else: ?>
-              <?php foreach ($delivery_notes as $delivery_note): ?>
-              <tr class="hover:bg-gray-50 transition whitespace-nowrap">
-                <td class="px-4 py-4 text-sm font-medium text-gray-900">
-                  <?= htmlspecialchars($delivery_note['document_type']) ?>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-700">
-                  <?= htmlspecialchars($delivery_note['customer_name']) ?><br>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-700">
-                  <?= htmlspecialchars($delivery_note['cost_type'] ?? '（なし）') ?>
-                </td>
-                <td class="px-4 py-4 text-sm text-gray-700">
-                  <?= htmlspecialchars($delivery_note['item_name'] ?? '（明細なし）') ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($delivery_note['customer_email']) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($delivery_note['sales_rep_name']) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars(date('Y年m月d日 ', strtotime($delivery_note['issue_date']))) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-500">
-                  <?= htmlspecialchars(date('Y年m月d日 ', strtotime($delivery_note['expiration_date']))) ?>
-                </td>
-                <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($delivery_note['subtotal']) ?></td>
-                <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($delivery_note['total_amount']) ?></td>
-                <td class="px-2 py-4 text-sm">
-                  <span
-                    class="px-2 py-1 inline-flex text-xs font-semibold rounded-full <?= $delivery_note['status'] === '未送付' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' ?>">
-                    <?= htmlspecialchars($delivery_note['status']) ?>
-                  </span>
-                </td>
-                <td class="px-2 py-4 text-right text-sm font-medium">
-                  <a href="/app/Delivery_notes/view.php?id=<?= $delivery_note['id'] ?>"
-                    class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
-                  <a href="/app/Delivery_notes/edit.php?id=<?= $delivery_note['id'] ?>"
-                    class="text-indigo-600 hover:text-indigo-900 mr-3">編集</a>
-                  <a href="/app/Delivery_notes/delete.php?id=<?= $delivery_note['id'] ?>"
-                    onclick="return confirm('「<?= htmlspecialchars($delivery_note['customer_name']) ?>」の納品書を削除しますか？');"
-                    class="text-red-600 hover:text-red-900">削除</a>
-                </td>
-              </tr>
-              <?php endforeach; ?>
+                <?php foreach ($delivery_notes as $delivery_note): ?>
+                  <tr class="hover:bg-gray-50 transition whitespace-nowrap">
+                    <td class="px-4 py-4 text-sm font-medium text-gray-900">
+                      <?= htmlspecialchars($delivery_note['document_type']) ?>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-700">
+                      <?= htmlspecialchars($delivery_note['customer_name']) ?><br>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-700">
+                      <?= htmlspecialchars($delivery_note['cost_type'] ?? '（なし）') ?>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-700">
+                      <?= htmlspecialchars($delivery_note['item_name'] ?? '（明細なし）') ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($delivery_note['customer_email']) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-700"><?= htmlspecialchars($delivery_note['sales_rep_name']) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars(date('Y年m月d日 ', strtotime($delivery_note['issue_date']))) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-500">
+                      <?= htmlspecialchars(date('Y年m月d日 ', strtotime($delivery_note['expiration_date']))) ?>
+                    </td>
+                    <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($delivery_note['subtotal']) ?></td>
+                    <td class="px-2 py-4 text-sm text-gray-900">¥<?= number_format($delivery_note['total_amount']) ?></td>
+                    <td class="px-2 py-4 text-sm">
+                      <span
+                        class="px-2 py-1 inline-flex text-xs font-semibold rounded-full <?= $delivery_note['status'] === '未送付' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' ?>">
+                        <?= htmlspecialchars($delivery_note['status']) ?>
+                      </span>
+                    </td>
+                    <td class="px-2 py-4 text-right text-sm font-medium">
+                      <a href="/app/Delivery_notes/view.php?id=<?= $delivery_note['id'] ?>"
+                        class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
+                      <a href="/app/Delivery_notes/edit.php?id=<?= $delivery_note['id'] ?>"
+                        class="text-indigo-600 hover:text-indigo-900 mr-3">編集</a>
+                      <form action="/app/Delivery_notes/delete.php" method="POST" class="inline"
+                        onsubmit="return confirm('「<?= htmlspecialchars($delivery_note['customer_name']) ?>」の納品書を削除しますか？');">
+                        <input type="hidden" name="id" value="<?= htmlspecialchars($delivery_note['id']) ?>">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
+                      </form>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
               <?php endif; ?>
             </tbody>
           </table>
@@ -183,62 +186,65 @@ SELECT
       <!-- スマホ用カード -->
       <div class="xl:hidden space-y-4">
         <?php foreach ($delivery_notes as $delivery_note): ?>
-        <div class="bg-white shadow rounded-lg p-4">
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">種別:</span>
-            <span><?= htmlspecialchars($delivery_note['document_type']) ?></span>
+          <div class="bg-white shadow rounded-lg p-4">
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">種別:</span>
+              <span><?= htmlspecialchars($delivery_note['document_type']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">区分:</span>
+              <span><?= htmlspecialchars($delivery_note['cost_type'] ?? '（なし）') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">顧客名:</span>
+              <span><?= htmlspecialchars($delivery_note['customer_name']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">商品名:</span>
+              <span> <?= htmlspecialchars($delivery_note['item_name'] ?? '（明細なし）') ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">顧客メールアドレス:</span>
+              <span><?= htmlspecialchars($delivery_note['customer_email']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">営業担当:</span>
+              <span><?= htmlspecialchars($delivery_note['sales_rep_name']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">発行日:</span>
+              <span><?= htmlspecialchars(date('Y-m-d', strtotime($delivery_note['issue_date']))) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">支払い期限:</span>
+              <span><?= htmlspecialchars(date('Y-m-d', strtotime($delivery_note['expiration_date']))) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">小計（税込）:</span>
+              <span>¥<?= number_format($delivery_note['subtotal']) ?></span>
+            </div>
+            <div class="flex justify-between mb-1">
+              <span class="font-semibold">金額（税込）:</span>
+              <span>¥<?= number_format($delivery_note['total_amount']) ?></span>
+            </div>
+            <div class="flex justify-between mb-2">
+              <span class="font-semibold">ステータス:</span>
+              <span><?= htmlspecialchars($delivery_note['status']) ?></span>
+            </div>
+            <div class="flex justify-end space-x-2">
+              <a href="/app/Delivery_notes/view.php?id=<?= $delivery_note['id'] ?>"
+                class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
+              <a href="/app/Delivery_notes/edit.php?id=<?= $delivery_note['id'] ?>"
+                class="text-indigo-600 hover:atext-indigo-900">編集
+              </a>
+              <form action="/app/Delivery_notes/delete.php" method="POST" class="inline"
+                onsubmit="return confirm('「<?= htmlspecialchars($delivery_note['customer_name']) ?>」の納品書を削除しますか？');">
+                <input type="hidden" name="id" value="<?= htmlspecialchars($delivery_note['id']) ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
+              </form>
+            </div>
           </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">区分:</span>
-            <span><?= htmlspecialchars($delivery_note['cost_type'] ?? '（なし）') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">顧客名:</span>
-            <span><?= htmlspecialchars($delivery_note['customer_name']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">商品名:</span>
-            <span> <?= htmlspecialchars($delivery_note['item_name'] ?? '（明細なし）') ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">顧客メールアドレス:</span>
-            <span><?= htmlspecialchars($delivery_note['customer_email']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">営業担当:</span>
-            <span><?= htmlspecialchars($delivery_note['sales_rep_name']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">発行日:</span>
-            <span><?= htmlspecialchars(date('Y-m-d', strtotime($delivery_note['issue_date']))) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">支払い期限:</span>
-            <span><?= htmlspecialchars(date('Y-m-d', strtotime($delivery_note['expiration_date']))) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">小計（税込）:</span>
-            <span>¥<?= number_format($delivery_note['subtotal']) ?></span>
-          </div>
-          <div class="flex justify-between mb-1">
-            <span class="font-semibold">金額（税込）:</span>
-            <span>¥<?= number_format($delivery_note['total_amount']) ?></span>
-          </div>
-          <div class="flex justify-between mb-2">
-            <span class="font-semibold">ステータス:</span>
-            <span><?= htmlspecialchars($delivery_note['status']) ?></span>
-          </div>
-          <div class="flex justify-end space-x-2">
-            <a href="/app/Delivery_notes/view.php?id=<?= $delivery_note['id'] ?>"
-              class="text-indigo-600 hover:text-indigo-900 mr-3">詳細</a>
-            <a href="/app/Delivery_notes/edit.php?id=<?= $delivery_note['id'] ?>"
-              class="text-indigo-600 hover:atext-indigo-900">編集
-            </a>
-            <a href="/app/Delivery_notes/delete.php?id=<?= $delivery_note['id'] ?>"
-              onclick="return confirm('「<?= htmlspecialchars($delivery_note['customer_name']) ?>」の請求書を削除しますか？');"
-              class="text-red-600 hover:text-red-900">削除</a>
-          </div>
-        </div>
         <?php endforeach; ?>
       </div>
       <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/render_pagination.php'; ?>

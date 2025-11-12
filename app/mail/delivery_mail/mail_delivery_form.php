@@ -2,12 +2,23 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/db_connect.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/lib/functions.php';
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/csrf.php';
 // セッションのエラー・入力値取得
 $errors = $_SESSION['form_errors'] ?? [];
 $formData = $_SESSION['form_data'] ?? [];
 unset($_SESSION['form_errors'], $_SESSION['form_data']);
 
+
+
+$csrf_token = get_csrf_token();
+
+//フォーム送信後の処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (!validate_csrf_token($_POST["csrf_token"] ?? null)) {
+    echo "不正なリクエストです";
+    exit();
+  }
+}
 $id = $_GET['id'] ?? null;
 if (!$id || !ctype_digit($id)) {
   die('不正なアクセスです。');
@@ -41,13 +52,14 @@ $attachments = $attachStmt->fetchAll();
       <form action="/app/mail/common/mail_send.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="id" value="<?= htmlspecialchars($document['id']) ?>">
         <input type="hidden" name="document_type" value="<?= htmlspecialchars($documentType) ?>">
+        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
         <!-- 宛先メール -->
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700">宛先メールアドレス</label>
           <input type="email" name="to" value="<?= htmlspecialchars($formData['to'] ?? $document['customer_email']) ?>"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
           <?php if (!empty($errors['to'])): ?>
-          <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['to']) ?></p>
+            <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['to']) ?></p>
           <?php endif; ?>
         </div>
 
@@ -58,7 +70,7 @@ $attachments = $attachStmt->fetchAll();
             value="<?= htmlspecialchars($formData['subject'] ?? "【納品書】{$document['customer_name']}様") ?>"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2" required>
           <?php if (!empty($errors['subject'])): ?>
-          <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['subject']) ?></p>
+            <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['subject']) ?></p>
           <?php endif; ?>
         </div>
 
@@ -80,7 +92,7 @@ $attachments = $attachStmt->fetchAll();
 EOM
           ) ?></textarea>
           <?php if (!empty($errors['body'])): ?>
-          <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['body']) ?></p>
+            <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['body']) ?></p>
           <?php endif; ?>
         </div>
 
@@ -92,23 +104,23 @@ EOM
           <p class="text-sm text-gray-500">※任意のPDFを添付できます。</p>
 
           <?php if (!empty($attachments)): ?>
-          <ul class="mt-2 list-disc list-inside">
-            <?php foreach ($attachments as $attachment): ?>
-            <li class="flex items-center justify-between border-b py-1">
-              <span class="text-gray-800">
-                <?= htmlspecialchars($attachment['file_name']) ?>
-              </span>
-              <button type="button" class="text-red-600 hover:underline text-sm"
-                onclick="deleteAttachment(<?= (int) $attachment['id'] ?>, <?= (int) $document['id'] ?>, '<?= htmlspecialchars($documentType) ?>')">
-                削除
-              </button>
-            </li>
-            <?php endforeach; ?>
-          </ul>
+            <ul class="mt-2 list-disc list-inside">
+              <?php foreach ($attachments as $attachment): ?>
+                <li class="flex items-center justify-between border-b py-1">
+                  <span class="text-gray-800">
+                    <?= htmlspecialchars($attachment['file_name']) ?>
+                  </span>
+                  <button type="button" class="text-red-600 hover:underline text-sm"
+                    onclick="deleteAttachment(<?= (int) $attachment['id'] ?>, <?= (int) $document['id'] ?>, '<?= htmlspecialchars($documentType) ?>')">
+                    削除
+                  </button>
+                </li>
+              <?php endforeach; ?>
+            </ul>
           <?php endif; ?>
 
           <?php if (!empty($errors['attachment'])): ?>
-          <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['attachment']) ?></p>
+            <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['attachment']) ?></p>
           <?php endif; ?>
         </div>
         <button type="submit"

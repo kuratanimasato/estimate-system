@@ -1,7 +1,6 @@
 <?php
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/init.php';
-
 $flash_message = $_SESSION['flash_message'] ?? null;
 unset($_SESSION['flash_message']);
 
@@ -58,7 +57,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
   <main class="flex-1 p-6 bg-gray-50">
     <div class="max-w-7xl mx-auto">
       <h1 class="text-3xl font-extrabold text-gray-900 mb-6">営業担当一覧</h1>
-
       <!-- 新規追加ボタン -->
       <div class="flex justify-end mb-4">
         <a href="/app/SalesPerson/create.php"
@@ -95,9 +93,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
                   <td class="px-6 py-4 whitespace-nowrap  text-sm font-medium">
                     <a href="/app/SalesPerson/edit.php?id=<?= $sale['id'] ?>"
                       class="text-indigo-600 hover:text-indigo-900 mr-4">編集</a>
-                    <a href="/app/SalesPerson/delete.php?id=<?= $sale['id'] ?>"
-                      onclick="return confirm('「<?= htmlspecialchars($sale['name']) ?>」を削除しますか？');"
-                      class="text-red-600 hover:text-red-900">削除</a>
+                    <form action="/app/SalesPerson/delete.php" method="POST" class="inline"
+                      onsubmit="return confirm('「<?= htmlspecialchars($sale['name']) ?>」を削除しますか？');">
+                      <input type="hidden" name="id" value="<?= $sale['id'] ?>">
+                      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                      <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
+                    </form>
                   </td>
                 </tr>
               <?php endforeach; ?>
@@ -121,9 +122,12 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/public/common/header.php';
             <div class="flex justify-end space-x-2 mt-2">
               <a href="/app/SalesPerson/edit.php?id=<?= $sale['id'] ?>"
                 class="text-indigo-600 hover:text-indigo-900 mr-4">編集</a>
-              <a href="/app/SalesPerson/delete.php?id=<?= $sale['id'] ?>"
-                onclick="return confirm('「<?= htmlspecialchars($sale['name']) ?>」を削除しますか？');"
-                class="text-red-600 hover:text-red-900">削除</a>
+              <form action="/app/SalesPerson/delete.php" method="POST" class="inline"
+                onsubmit="return confirm('「<?= htmlspecialchars($sale['name']) ?>」を削除しますか？');">
+                <input type="hidden" name="id" value="<?= $sale['id'] ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
+              </form>
               </td>
             </div>
           </div>
